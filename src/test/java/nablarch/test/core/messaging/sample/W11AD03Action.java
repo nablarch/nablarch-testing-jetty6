@@ -36,12 +36,12 @@ public class W11AD03Action {
         context.setRequestScopedVar("responseRM11AD0101_2", responseMessage2);        
         SyncMessage responseMessage3 = MessageSender.sendSync(new SyncMessage("RM11AD0102").addDataRecord(data));
         context.setRequestScopedVar("responseRM11AD0102", responseMessage3);
-        SyncMessage responseMessage4 = MessageSender.sendSync(new SyncMessage("RM11AD0101").addDataRecord(data));
-        context.setRequestScopedVar("responseRM11AD0101_2", responseMessage4);        
-        SyncMessage responseMessage5 = MessageSender.sendSync(new SyncMessage("RM11AD0101").addDataRecord(data));
-        context.setRequestScopedVar("responseRM11AD0101_2", responseMessage5);        
-        SyncMessage responseMessage6 = MessageSender.sendSync(new SyncMessage("RM11AD0101").addDataRecord(data));
-        context.setRequestScopedVar("responseRM11AD0101_2", responseMessage6);        
+//        SyncMessage responseMessage4 = MessageSender.sendSync(new SyncMessage("RM11AD0101").addDataRecord(data));
+//        context.setRequestScopedVar("responseRM11AD0101_2", responseMessage4);
+//        SyncMessage responseMessage5 = MessageSender.sendSync(new SyncMessage("RM11AD0101").addDataRecord(data));
+//        context.setRequestScopedVar("responseRM11AD0101_2", responseMessage5);
+//        SyncMessage responseMessage6 = MessageSender.sendSync(new SyncMessage("RM11AD0101").addDataRecord(data));
+//        context.setRequestScopedVar("responseRM11AD0101_2", responseMessage6);
 
         return new HttpResponse("/test.html");
     }
