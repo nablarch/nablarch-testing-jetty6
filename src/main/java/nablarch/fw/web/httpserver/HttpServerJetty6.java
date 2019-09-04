@@ -21,19 +21,12 @@ import java.io.File;
 import java.util.List;
 
 /**
- * エンベディドHTTPサーバー&サーブレットコンテナ。
- * <pre>
- * 主に単体テスト時の画面確認や打鍵テストで使用することを想定した、
- * JVMプロセス内の1スレッドとして動作する軽量アプリケーションサーバである。
- * 現行の実装では、内部的にJettyサーバを使用しており、
- * 本クラスは単なるラッパーに過ぎない。
- * </pre>
+ * Jetty6対応の{@link HttpServer}サブクラス。
  *
- * @author Iwauo Tajima <iwauo@tis.co.jp>
+ * @author Tsuyoshi Kawasaki
  */
 @Published(tag = "architect")
 public class HttpServerJetty6 extends HttpServer {
-
 
     /** アプリケーションサーバの実体 */
     private Server jetty = null;
