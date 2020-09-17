@@ -245,7 +245,7 @@ public class HttpServerTest {
         assertEquals(200, res.getStatusCode());
         assertEquals("hello world", res.getBodyString().trim());
         
-        server.addHandler("/test2/", new Object() {
+        server.addHandler("/test2//", new Object() {
             public HttpResponse getIndex(HttpRequest req, ExecutionContext ctx) {
                 return new HttpResponse(200).write("hello world");
             }
