@@ -26,7 +26,8 @@
   </properties>
   
   <profiles>
-    <!-- リリースビルド及びJava6テスト用プロファイル。-->
+    <!-- テストのためにJDKに応じた依存関係を設定する必要があるため、JDKに応じたプロファイルを定義。 -->
+    <!-- リリース用ビルドはJava6用プロファイルで行なう。-->
     <profile>
       <id>java6</id>
       <activation>
@@ -39,7 +40,6 @@
         </dependency>
       </dependencies>
     </profile>
-    <!-- Java7テスト用プロファイル。Java6と同様の依存関係を使用する-->
     <profile>
       <id>java7</id>
       <activation>
@@ -52,7 +52,6 @@
         </dependency>
       </dependencies>
     </profile>
-    <!-- Java8テスト用プロファイル。JSPのコンパイラを差し替える-->
     <profile>
       <id>java8</id>
       <activation>
@@ -74,7 +73,6 @@
         </dependency>
       </dependencies>
     </profile>
-    <!-- 本モジュールはJava8までしかサポートしないため、これより新しいJDK用のプロファイルは存在しない-->
   </profiles>
 
   <dependencies>
