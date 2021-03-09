@@ -1,8 +1,11 @@
 package nablarch.fw.web;
 
+import nablarch.common.web.WebConfig;
 import nablarch.common.web.download.StreamResponse;
 import nablarch.common.web.handler.HttpAccessLogHandler;
 import nablarch.core.ThreadContext;
+import nablarch.core.repository.ObjectLoader;
+import nablarch.core.repository.SystemRepository;
 import nablarch.core.util.Builder;
 import nablarch.fw.ExecutionContext;
 import nablarch.fw.web.handler.ResourceMapping;
@@ -27,17 +30,14 @@ import static nablarch.test.StringMatcher.startsWith;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalToIgnoringWhiteSpace;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.junit.Assume.assumeThat;
 
 public class HttpServerTest {
 
     @Before
     public void setUp() throws Exception {
+        SystemRepository.clear();
         ThreadContext.clear();
     }
 
@@ -581,6 +581,147 @@ public class HttpServerTest {
         </body>
         </html>
         ***********/
+        assertEquals(expectingHtml.trim(), buffer.toString().trim());
+    }
+
+    /**
+     * ボディ無しでもダンプできること。
+     */
+    @Test
+    public void testHttpMessageDumpBodyEmptyFacilities() throws Exception {
+        File dumpRoot = new File("tmp/http_dump/");
+        dumpRoot.mkdirs();
+        for (File file : dumpRoot.listFiles()) {
+            file.delete();
+        }
+
+        File docRoot = new File("tmp/doc_root/");
+        docRoot.mkdirs();
+        for (File file : docRoot.listFiles()) {
+            file.delete();
+        }
+
+        HttpServer server = new HttpServerJetty6()
+                .setHttpDumpRoot(dumpRoot.getPath())
+                .setHttpDumpEnabled(true)
+                .setWarBasePath("file://tmp/doc_root/")
+                .addHandler("/app/test.html", new HttpRequestHandler() {
+                    public HttpResponse handle(HttpRequest req, ExecutionContext ctx) {
+                        return new HttpResponse().setStatusCode(200);
+                    }
+                })
+                .startLocal();
+
+        assertTrue(server.isHttpDumpEnabled());
+        assertEquals(dumpRoot, server.getHttpDumpRoot());
+
+        ExecutionContext ctx = new ExecutionContext();
+        HttpRequest req = new MockHttpRequest("GET /app/test.html HTTP/1.1");
+
+        HttpResponse res = server.handle(req, ctx);
+
+        assertEquals(200, res.getStatusCode());
+        assertNull(res.getContentType());
+        assertEquals("/app/test.html", req.getRequestPath());
+
+        File[] dumpFiles = dumpRoot.listFiles();
+        assertEquals(1, dumpFiles.length);
+        File dumpFile = dumpFiles[0];
+
+        assertTrue(dumpFile.exists());
+        assertTrue(dumpFile.getPath().endsWith("OK"));
+
+        StringBuilder buffer = new StringBuilder();
+        BufferedReader reader = new BufferedReader(new FileReader(dumpFile));
+        while (true) {
+            String line = reader.readLine();
+            if (line == null) {
+                break;
+            }
+            buffer.append(line).append(Builder.LS);
+        }
+        reader.close();
+        String docRootPath = docRoot.getAbsolutePath();
+        String expectingHtml = Hereis.string(docRootPath);
+        /**********************
+         ***********/
+        assertEquals(expectingHtml.trim(), buffer.toString().trim());
+    }
+
+    /**
+     * ボディ無しでもダンプできること。
+     *
+     * (webConfig.setContentTypeForResponseWithNoBodyEnabled(true)の設定がある場合)
+     *
+     */
+    @Test
+    public void testHttpMessageDumpBodyEmptyFacilitiesForResponseWithNoBodyEnabledTrue() throws Exception {
+        final WebConfig webConfig = new WebConfig();
+        webConfig.setContentTypeForResponseWithNoBodyEnabled(true);
+        SystemRepository.load(new ObjectLoader() {
+            @Override
+            public Map<String, Object> load() {
+                final Map<String, Object> result = new HashMap<String, Object>();
+                result.put("webConfig", webConfig);
+                return result;
+            }
+        });
+        File dumpRoot = new File("tmp/http_dump/");
+        dumpRoot.mkdirs();
+        for (File file : dumpRoot.listFiles()) {
+            file.delete();
+        }
+
+        File docRoot = new File("tmp/doc_root/");
+        docRoot.mkdirs();
+        for (File file : docRoot.listFiles()) {
+            file.delete();
+        }
+
+        HttpServer server = new HttpServerJetty6()
+                .setHttpDumpRoot(dumpRoot.getPath())
+                .setHttpDumpEnabled(true)
+                .setWarBasePath("file://tmp/doc_root/")
+                .addHandler("/app/test.html", new HttpRequestHandler() {
+                    public HttpResponse handle(HttpRequest req, ExecutionContext ctx) {
+                        return new HttpResponse().setStatusCode(200);
+                    }
+                })
+                .startLocal();
+
+        assertTrue(server.isHttpDumpEnabled());
+        assertEquals(dumpRoot, server.getHttpDumpRoot());
+
+        ExecutionContext ctx = new ExecutionContext();
+        HttpRequest req = new MockHttpRequest("GET /app/test.html HTTP/1.1");
+
+        HttpResponse res = server.handle(req, ctx);
+
+        assertEquals(200, res.getStatusCode());
+        assertEquals("text/plain;charset=UTF-8", res.getContentType());
+        assertEquals("/app/test.html", req.getRequestPath());
+
+        File[] dumpFiles = dumpRoot.listFiles();
+        assertEquals(1, dumpFiles.length);
+        File dumpFile = dumpFiles[0];
+
+        assertTrue(dumpFile.exists());
+        assertTrue(dumpFile.getPath().endsWith("plain"));
+
+        StringBuilder buffer = new StringBuilder();
+        BufferedReader reader = new BufferedReader(new FileReader(dumpFile));
+        while (true) {
+            String line = reader.readLine();
+            if (line == null) {
+                break;
+            }
+            buffer.append(line).append(Builder.LS);
+        }
+        reader.close();
+        String docRootPath = docRoot.getAbsolutePath();
+        String expectingHtml = Hereis.string(docRootPath);
+        /**********************
+         ***********/
         assertEquals(expectingHtml.trim(), buffer.toString().trim());
     }
 
