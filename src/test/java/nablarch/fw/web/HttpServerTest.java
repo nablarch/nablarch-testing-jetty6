@@ -621,7 +621,7 @@ public class HttpServerTest {
         HttpResponse res = server.handle(req, ctx);
 
         assertEquals(200, res.getStatusCode());
-        assertNull(res.getHeader("Content-Type"));
+        assertNull(res.getContentType());
         assertEquals("/app/test.html", req.getRequestPath());
 
         File[] dumpFiles = dumpRoot.listFiles();
@@ -698,7 +698,7 @@ public class HttpServerTest {
         HttpResponse res = server.handle(req, ctx);
 
         assertEquals(200, res.getStatusCode());
-        assertEquals("text/plain;charset=UTF-8", res.getHeader("Content-Type"));
+        assertEquals("text/plain;charset=UTF-8", res.getContentType());
         assertEquals("/app/test.html", req.getRequestPath());
 
         File[] dumpFiles = dumpRoot.listFiles();
