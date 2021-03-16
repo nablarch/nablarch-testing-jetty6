@@ -657,7 +657,7 @@ public class HttpServerTest {
     @Test
     public void testHttpMessageDumpBodyEmptyFacilitiesForResponseWithNoBodyEnabledTrue() throws Exception {
         final WebConfig webConfig = new WebConfig();
-        webConfig.setContentTypeForResponseWithNoBodyEnabled(true);
+        webConfig.setAddDefaultContentTypeForNoBodyResponse(true);
         SystemRepository.load(new ObjectLoader() {
             @Override
             public Map<String, Object> load() {
