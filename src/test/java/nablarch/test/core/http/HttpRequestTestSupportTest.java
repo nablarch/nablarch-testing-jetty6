@@ -584,7 +584,7 @@ public class HttpRequestTestSupportTest {
          */
         @Override
         public HttpResponse handle(HttpRequest req, ExecutionContext unused) {
-            return null;
+            return new HttpResponse();
         }
 
         @Override
