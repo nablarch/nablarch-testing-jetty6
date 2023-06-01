@@ -96,9 +96,10 @@ public class BasicHttpRequestTestTemplateTest {
     public void testOverlayFirst() {
         RepositoryInitializer.reInitializeRepository("nablarch/test/core/http/testOverlay.xml");
         BasicHttpRequestTestTemplate target = new BasicHttpRequestTestTemplateForTesting(getClass());
-        target.execute("overlayFirst");   // 1番目のWebAppであるappのリソースを取得できること。
-        target.execute("overlaySecond");  // 2番目のWebAppであるappのリソースを取得できること。
-        target.execute("overlayThird");   // 3番目のWebAppであるappのリソースを取得できること。
+        target.execute("overlayFirst");    // 1番目のWebAppであるappのリソースを取得できること。
+        target.execute("overlaySecond");   // 2番目のWebAppであるappのリソースを取得できること。
+        target.execute("overlayThird");    // 3番目のWebAppであるappのリソースを取得できること。
+        target.execute("overlayNotFound"); // 存在しないリソースは取得できないこと。
     }
 
 
@@ -123,7 +124,10 @@ public class BasicHttpRequestTestTemplateTest {
     /** テスト用HttpServer */
     private static class HttpServerForTesting extends HttpServerJetty6 {
 
-        /** {@inheritDoc} */
+        /** {@inheritDoc}
+         * コンテナが返却したステータスコードとフレームワークが設定したステータスコードが異なる場合を検証するため、
+         * コンテナが返却したステータスコードを{@link HttpRequestTestSupport}に設定する。
+         */
         @Override
         public HttpResponse handle(HttpRequest req, ExecutionContext ctx) {
             HttpResponse res = super.handle(req, ctx);
