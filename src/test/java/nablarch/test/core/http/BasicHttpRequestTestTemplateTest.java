@@ -96,9 +96,10 @@ public class BasicHttpRequestTestTemplateTest {
     public void testOverlayFirst() {
         RepositoryInitializer.reInitializeRepository("nablarch/test/core/http/testOverlay.xml");
         BasicHttpRequestTestTemplate target = new BasicHttpRequestTestTemplateForTesting(getClass());
-        target.execute("overlayFirst");   // 1番目のWebAppであるappのリソースを取得できること。
-        target.execute("overlaySecond");  // 2番目のWebAppであるappのリソースを取得できること。
-        target.execute("overlayThird");   // 3番目のWebAppであるappのリソースを取得できること。
+        target.execute("overlayFirst");    // 1番目のWebAppであるappのリソースを取得できること。
+        target.execute("overlaySecond");   // 2番目のWebAppであるappのリソースを取得できること。
+        target.execute("overlayThird");    // 3番目のWebAppであるappのリソースを取得できること。
+        target.execute("overlayNotFound"); // 存在しないリソースは取得できないこと。
     }
 
 
@@ -123,7 +124,15 @@ public class BasicHttpRequestTestTemplateTest {
     /** テスト用HttpServer */
     private static class HttpServerForTesting extends HttpServerJetty6 {
 
-        /** {@inheritDoc} */
+        /** {@inheritDoc}
+         *  {@link HttpRequestTestSupportHandler#handle}内で、後続ハンドラから返却された
+         *  {@link HttpResponse}のステータスコードを内部に保持している。
+         *  この時、保持されるステータスコードはNablarchが設定したステータスコードである。
+         *  しかし、コンテナがNablarchの設定したステータスコードとは異なるステータスコードを返却する場合がある。
+         *  (サーブレットフォワード先のコンテンツが見つからない場合などはNablarchは200を返すがコンテナは404を返そうとする。)
+         *  ここではコンテナが返却したステータスコードを検証に使用したいため、{@link HttpServer}が返却したレスポンスを
+         *  解析した後、ここで改めて{@link HttpRequestTestSupportHandler}のステータスコードにセットしている。
+         */
         @Override
         public HttpResponse handle(HttpRequest req, ExecutionContext ctx) {
             HttpResponse res = super.handle(req, ctx);
